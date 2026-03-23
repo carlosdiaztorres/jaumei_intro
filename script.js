@@ -50,38 +50,40 @@ document.addEventListener("DOMContentLoaded", () => {
             const sections = document.querySelectorAll('header.hero, section, footer');
             sections.forEach(sec => sec.classList.remove('active-slide'));
             
-            for (let i = 0; i < sections.length; i++) {
+            // 1. Initial slide setup
+            sections[0].classList.add('active-slide');
+            const heroContent = sections[0].querySelector('.hero-content');
+            if (heroContent) {
+                heroContent.style.opacity = '0';
+                heroContent.style.transition = 'opacity 2s ease-in-out';
+                await wait(2500); // Pure BG
+                heroContent.style.opacity = '1'; // Dissolve text
+                await wait(6000); // Reading time
+            }
+            
+            // 2. Loop for true overlapping cross-dissolve
+            for (let i = 1; i < sections.length; i++) {
+                // Determine read time for the upcoming section
+                let readTime = 8000;
+                if (sections[i].classList.contains('philosophy') || sections[i].classList.contains('educational-project')) {
+                    readTime = 12000;
+                } else if (sections[i].classList.contains('special-projects') || sections[i].classList.contains('services')) {
+                    readTime = 10000;
+                } else if (sections[i].tagName.toLowerCase() === 'footer') {
+                    readTime = 7000;
+                }
+                
+                // Start cross-dissolve: fade next slide IN
                 sections[i].classList.add('active-slide');
                 
-                if (i === 0) {
-                    // Hero: show Only BG for a few seconds
-                    const heroContent = sections[0].querySelector('.hero-content');
-                    if (heroContent) {
-                        heroContent.style.opacity = '0';
-                        heroContent.style.transition = 'opacity 2s ease-in-out';
-                        
-                        await wait(2500); // Background only
-                        heroContent.style.opacity = '1'; // Dissolve texts in
-                        await wait(6000); // Read time for title
-                    }
-                } else {
-                    // Reading time based on section content size to be comfortable
-                    let readTime = 8000;
-                    if (sections[i].classList.contains('philosophy') || sections[i].classList.contains('educational-project')) {
-                        readTime = 12000;
-                    } else if (sections[i].classList.contains('special-projects') || sections[i].classList.contains('services')) {
-                        readTime = 10000;
-                    } else if (sections[i].tagName.toLowerCase() === 'footer') {
-                        readTime = 6000;
-                    }
-                    await wait(readTime);
-                }
+                // Wait for the new slide to become fully opaque (1.5s CSS transition overlap)
+                await wait(1500);
                 
-                // Fade out current slide, unless it's the final slide
-                if (i < sections.length - 1) {
-                    sections[i].classList.remove('active-slide');
-                    await wait(1500); // Let the CSS dissolve transition complete before showing the next one
-                }
+                // Safely remove the old slide from underneath
+                sections[i - 1].classList.remove('active-slide');
+                
+                // Wait for the user to read the current slide
+                await wait(readTime);
             }
             
             // Presentation Concluded
