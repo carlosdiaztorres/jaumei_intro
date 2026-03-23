@@ -63,14 +63,18 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // 2. Loop for true overlapping cross-dissolve
             for (let i = 1; i < sections.length; i++) {
-                // Determine read time for the upcoming section
-                let readTime = 8000;
-                if (sections[i].classList.contains('philosophy') || sections[i].classList.contains('educational-project')) {
-                    readTime = 12000;
-                } else if (sections[i].classList.contains('special-projects') || sections[i].classList.contains('services')) {
-                    readTime = 10000;
+                // Determine read time for the upcoming section based on text size
+                let readTime = 6000; // Default for small sections
+                if (sections[i].classList.contains('philosophy')) {
+                    readTime = 10000; // 3 large paragraphs
+                } else if (sections[i].classList.contains('educational-project')) {
+                    readTime = 9000; // 6 features
+                } else if (sections[i].classList.contains('special-projects')) {
+                    readTime = 6000; // Just visual tags
+                } else if (sections[i].classList.contains('services')) {
+                    readTime = 7000; // 4 rows
                 } else if (sections[i].tagName.toLowerCase() === 'footer') {
-                    readTime = 7000;
+                    readTime = 4000; // Just image and short text
                 }
                 
                 // Start cross-dissolve: fade next slide IN
