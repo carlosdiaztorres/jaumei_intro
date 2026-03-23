@@ -192,6 +192,9 @@ h2::after {
 .card-icon {
     font-size: 3rem;
     margin-bottom: 20px;
+    color: var(--secondary);
+    display: flex;
+    justify-content: center;
 }
 
 .card h3 {
@@ -224,10 +227,14 @@ h2::after {
 }
 
 .feature-icon {
-    font-size: 2rem;
+    font-size: 2.2rem;
     margin-right: 20px;
     min-width: 50px;
     text-align: center;
+    color: var(--primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .feature-text {
