@@ -462,3 +462,49 @@ h2::after {
     pointer-events: none;
     transform: translateY(20px);
 }
+
+/* --- Presentation Video Mode (Dissolve Slides) --- */
+body.video-mode-active {
+    overflow: hidden;
+    background-color: var(--bg);
+}
+
+body.video-mode-active > header.hero,
+body.video-mode-active > section,
+body.video-mode-active > footer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--bg);
+    opacity: 0;
+    z-index: 10;
+    transition: opacity 1.5s ease-in-out;
+    padding: 20px;
+    margin: 0;
+}
+
+body.video-mode-active > header.hero {
+    background: linear-gradient(135deg, rgba(255,123,84,0.1) 0%, rgba(77,150,255,0.1) 100%), #FFFFFF;
+}
+
+body.video-mode-active > section.alt-bg {
+    background-color: var(--bg-alt);
+}
+
+body.video-mode-active > .active-slide {
+    opacity: 1;
+    z-index: 20;
+}
+
+/* Ensure JS scroll animations don't conflict with slide opacity */
+body.video-mode-active .section-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}

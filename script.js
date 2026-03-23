@@ -32,41 +32,69 @@ document.addEventListener("DOMContentLoaded", () => {
         item.style.transitionDelay = `${index * 0.15}s`;
     });
 
-    // --- Video Auto-Scroll Mode ---
+    // --- Video Presentation Mode (Slide Dissolve) ---
     const videoBtn = document.getElementById('video-mode-btn');
     if (videoBtn) {
-        videoBtn.addEventListener('click', async () => {
-            // Smoothly hide button
-            videoBtn.classList.add('recording');
+        // Clone button to securely remove old event listeners if reloading script
+        const newBtn = videoBtn.cloneNode(true);
+        videoBtn.parentNode.replaceChild(newBtn, videoBtn);
+        
+        newBtn.addEventListener('click', async () => {
+            newBtn.classList.add('recording');
+            document.body.classList.add('video-mode-active');
+            window.scrollTo(0, 0); // Reset scroll physically just in case
             
-            // Wait 1.5 seconds so the user has time to start recording without mouse movement
-            await new Promise(r => setTimeout(r, 1500));
+            const wait = ms => new Promise(r => setTimeout(r, ms));
+            await wait(1500); // Time to click record
             
-            // Scroll to top first just in case
-            window.scrollTo({ top: 0, behavior: 'instant' });
-            await new Promise(r => setTimeout(r, 1000));
+            const sections = document.querySelectorAll('header.hero, section, footer');
+            sections.forEach(sec => sec.classList.remove('active-slide'));
             
-            const totalHeight = document.body.scrollHeight - window.innerHeight;
-            const duration = 35000; // 35 seconds total scroll time -> nice, readable pace
-            const startTime = performance.now();
-            
-            function step(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
+            for (let i = 0; i < sections.length; i++) {
+                sections[i].classList.add('active-slide');
                 
-                // Linear scroll for cinematic smoothness
-                const currentScroll = totalHeight * progress;
-                window.scrollTo(0, currentScroll);
-                
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
+                if (i === 0) {
+                    // Hero: show Only BG for a few seconds
+                    const heroContent = sections[0].querySelector('.hero-content');
+                    if (heroContent) {
+                        heroContent.style.opacity = '0';
+                        heroContent.style.transition = 'opacity 2s ease-in-out';
+                        
+                        await wait(2500); // Background only
+                        heroContent.style.opacity = '1'; // Dissolve texts in
+                        await wait(6000); // Read time for title
+                    }
                 } else {
-                    // Re-show button 3 seconds after reaching bottom
-                    setTimeout(() => videoBtn.classList.remove('recording'), 3000);
+                    // Reading time based on section content size to be comfortable
+                    let readTime = 8000;
+                    if (sections[i].classList.contains('philosophy') || sections[i].classList.contains('educational-project')) {
+                        readTime = 12000;
+                    } else if (sections[i].classList.contains('special-projects') || sections[i].classList.contains('services')) {
+                        readTime = 10000;
+                    } else if (sections[i].tagName.toLowerCase() === 'footer') {
+                        readTime = 6000;
+                    }
+                    await wait(readTime);
+                }
+                
+                // Fade out current slide, unless it's the final slide
+                if (i < sections.length - 1) {
+                    sections[i].classList.remove('active-slide');
+                    await wait(1500); // Let the CSS dissolve transition complete before showing the next one
                 }
             }
             
-            window.requestAnimationFrame(step);
+            // Presentation Concluded
+            await wait(4000);
+            document.body.classList.remove('video-mode-active');
+            newBtn.classList.remove('recording');
+            
+            // Clean up inline styles
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent) {
+                heroContent.style.opacity = '';
+                heroContent.style.transition = '';
+            }
         });
     }
 });
