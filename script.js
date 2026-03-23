@@ -92,10 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
             newBtn.classList.remove('recording');
             
             // Clean up inline styles
-            const heroContent = document.querySelector('.hero-content');
-            if (heroContent) {
-                heroContent.style.opacity = '';
-                heroContent.style.transition = '';
+            const cleanupHero = document.querySelector('.hero-content');
+            if (cleanupHero) {
+                cleanupHero.style.opacity = '';
+                cleanupHero.style.transition = '';
             }
         });
     }
